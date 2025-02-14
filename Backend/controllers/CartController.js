@@ -29,20 +29,20 @@ const removeFromCart = async (req, res) => {
   try {
     let userData = await userModel.findById(req.body.userId);
 
-    // Ensure cartData is initialized
+    
     let cartData = { ...userData.cartData } || {};
 
-    // Decrease item quantity only if it exists and is greater than 0
+   
     if (cartData[req.body.itemId] && cartData[req.body.itemId] > 0) {
       cartData[req.body.itemId] -= 1;
 
-      // Optional: Remove item if quantity reaches zero
+     
       if (cartData[req.body.itemId] === 0) {
         delete cartData[req.body.itemId];
       }
     }
 
-    // Update user data
+  
     await userModel.findByIdAndUpdate(req.body.userId, { cartData });
 
     res.json({ success: true, message: "Removed from Cart" });
