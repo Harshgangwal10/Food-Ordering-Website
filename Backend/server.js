@@ -5,8 +5,8 @@ import { connectDB } from "./config/db.js"
 import foodRouter from "./routes/foodRoutes.js"
 import userRouter from "./routes/userRoute.js"
 import 'dotenv/config'
-import cartRouter from "./routes/cartroute.js"
-import orderRouter from "./routes/orderroutes.js"
+import cartRouter from "./routes/cartRoute.js"
+import orderRouter from "./routes/orderRoutes.js"
 
 
 //app config
