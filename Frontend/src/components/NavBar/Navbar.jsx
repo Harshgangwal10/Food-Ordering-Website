@@ -20,6 +20,7 @@ const navbar = ({setShowLogin}) => {
 
   return (
     <div className= "navbar">
+      <h2 className="logo"> Quick Food</h2>
      
       <ul className="navbar-menu">
         <Link to='/' onClick={()=>setMenu("Home")} className={menu === "Home" ? "active" : ""}>Home</Link>
@@ -28,7 +29,7 @@ const navbar = ({setShowLogin}) => {
         <a href='#footer' onClick={()=>setMenu("Contact Us")} className={menu === "Contact Us" ?"active" :""}>Contact Us</a>
       </ul>
       <div className="navbar-right">
-        <img src={assets.search_icon} alt="" />
+
         <div className="navbar-search-icon">
           <Link to='./cart'><img src={assets.basket_icon} alt="" /></Link>
           <div className={getTotalCartAmount()===0 ? "" :"dot" }></div>

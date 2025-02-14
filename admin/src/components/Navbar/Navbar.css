@@ -5,7 +5,11 @@
   padding: 8px 4%;
 }
 .navbar .logo{
-  width:max(10%, 80px)
+  font-size: 30px;
+  margin: 20px;
+  width:max(20%, 80px);
+  color: rgb(237, 94, 69);
+ 
 }
 
 .navbar .profile{

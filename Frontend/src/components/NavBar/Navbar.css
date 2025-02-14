@@ -13,7 +13,11 @@
 
 
 .navbar .logo{
-    width: 150px;
+  font-size: 35px;
+  margin: 20px;
+  width:max(20%, 80px);
+  color: rgb(237, 94, 69);
+  
 }
 
 .navbar-menu{
@@ -98,9 +102,9 @@
 }
 @media (max-width:1050px) {
   .navbar .logo{
-    width: 140px;
-
+    font-size: 30px;
   }
+  
   .navbar-menu{
     gap: 20px;
     font-size: 17px;
