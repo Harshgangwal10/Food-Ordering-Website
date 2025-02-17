@@ -4,7 +4,7 @@
   background: url('../../assets/home_img.png') no-repeat center center;
   background-size: cover; 
   position: relative;
-  boder-radius:15px;
+  border-radius:15px;
 }
 
 .header-content{
