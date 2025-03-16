@@ -16,7 +16,7 @@ const FoodDisplay = ({ category }) => {
 
   return (
     <div className='food-display' id='food-display'>
-      <h2>Top dishes near you</h2>
+      <h2>Top dishes near you ! </h2>
       {loading ? (
         <div className="loading"><h1>Loading...</h1></div> // You can replace this with a spinner
       ) : (
