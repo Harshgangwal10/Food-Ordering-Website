@@ -28,16 +28,25 @@ const StoreContextProvider = ({ children }) => {
   }, 0);
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadFood = async () => {
       const foodResponse = await axios.get(`${url}/api/food/list`);
-      dispatch(setFoodList(foodResponse.data.data));
-      if (token) {
-        const cartResponse = await axios.post(`${url}/api/cart/get`, {}, { headers: { token } });
-        if (cartResponse.data.success) dispatch(setCartState(cartResponse.data.cartData));
-      }
+      if (foodResponse.data.success) dispatch(setFoodList(foodResponse.data.data));
     };
-    loadData().catch(console.error);
-  }, [dispatch, token]);
+    loadFood().catch(console.error);
+  }, [dispatch, url]);
+
+  useEffect(() => {
+    if (!token) {
+      dispatch(setCartState({}));
+      return;
+    }
+
+    const loadCart = async () => {
+      const cartResponse = await axios.post(`${url}/api/cart/get`, {}, { headers: { token } });
+      if (cartResponse.data.success) dispatch(setCartState(cartResponse.data.cartData));
+    };
+    loadCart().catch(console.error);
+  }, [dispatch, token, url]);
 
   return <StoreContext.Provider value={{ food_list, cartItems, setCartItems, addToCart, removeFromCart, getTotalCartAmount, url, token, setToken }}>{children}</StoreContext.Provider>;
 };

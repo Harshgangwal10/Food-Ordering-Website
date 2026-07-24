@@ -46,7 +46,10 @@ await ensureDefaultAdmin();
 
 
 app.use("/api/food", foodRouter)
-app.use("/images",express.static('uploads'))
+app.use("/images", express.static("uploads", {
+  maxAge: "7d",
+  immutable: true,
+}))
 app.use("/api/user" ,userRouter)
 app.use("/api/cart",cartRouter)
 app.use("/api/order",orderRouter)

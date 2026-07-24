@@ -29,11 +29,15 @@ const addFood =async(req,res)=>{
 
 const listfood = async(req,res)=>{
   try{
-    const foods= await foodModel.find();
+    const foods = await foodModel
+      .find()
+      .select("name description price category image")
+      .lean();
+    res.set("Cache-Control", "public, max-age=300, stale-while-revalidate=600");
     res.json({success:true ,data:foods})
   }catch(error){
     console.log(error)
-    res.json({success:false,message:"Error"})
+    res.status(500).json({success:false,message:"Error"})
   }
 }
 

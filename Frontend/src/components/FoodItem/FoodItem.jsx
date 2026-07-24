@@ -12,7 +12,9 @@ const FoodItem = ({ id, name, price, description, image }) => {
         <img
           className="food-item-image"
           src={url + "/images/" + image}
-          alt=""
+          alt={name}
+          loading="lazy"
+          decoding="async"
         />
         {!cartItems[id] || cartItems[id] === 0 ? (
           <img
