@@ -1,8 +1,12 @@
 .add{
-  width: 70%;
-  margin-left: max(5vw,25px);
-  margin-top: 50px;
-  color: #6d6d6d;
+  width: min(760px, calc(100% - 48px));
+  margin: 36px auto;
+  padding: 28px;
+  color: #56607a;
+  background: #fff;
+  border: 1px solid #e7e9f0;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(45, 53, 84, .06);
 }
 
 .add form{
@@ -15,7 +19,10 @@ width: 120px;
   width: max(40%,280px);
 }
 .add-product-name input , .add-product-description textarea{
-  padding: 10px;
+  padding: 12px;
+  border: 1px solid #dce0eb;
+  border-radius: 8px;
+  outline: none;
 }
 
 .add-category-price{
@@ -25,14 +32,10 @@ width: 120px;
 .add-category-price select, .add-category-price input{
   max-width: 120px;
   padding: 10px;
+  border: 1px solid #dce0eb;
+  border-radius: 8px;
 }
 
 .add-btn {
-  max-width: 120px;
-  border: none;
-  padding: 10px;
-  background-color: rgb(186, 15, 15);
-  color: white;
-  cursor: pointer;
-  
+  max-width: 140px;
 }

@@ -5,17 +5,17 @@ import userModel from "../models/userModel.js";
 
 const addToCart = async (req, res) => {
   try {
-    let userData = await userModel.findById(req.body.userId);
-    
+    let userData = await userModel.findById(req.userId);
+
     // Ensure cartData is initialized
-    let cartData = { ...userData.cartData } || {};
+    let cartData = userData.cartData ? { ...userData.cartData } : {};
 
     // Increment item quantity or initialize it
     cartData[req.body.itemId] = (cartData[req.body.itemId] || 0) + 1;
 
     // Update user data
-    await userModel.findByIdAndUpdate(req.body.userId, { cartData });
-    
+    await userModel.findByIdAndUpdate(req.userId, { cartData });
+
     res.json({ success: true, message: "Added to Cart" });
   } catch (error) {
     console.error(error);
@@ -23,27 +23,27 @@ const addToCart = async (req, res) => {
   }
 };
 
-//remove items from user 
+//remove items from user
 
 const removeFromCart = async (req, res) => {
   try {
-    let userData = await userModel.findById(req.body.userId);
+    let userData = await userModel.findById(req.userId);
 
-    
-    let cartData = { ...userData.cartData } || {};
 
-   
+    let cartData = userData.cartData ? { ...userData.cartData } : {};
+
+
     if (cartData[req.body.itemId] && cartData[req.body.itemId] > 0) {
       cartData[req.body.itemId] -= 1;
 
-     
+
       if (cartData[req.body.itemId] === 0) {
         delete cartData[req.body.itemId];
       }
     }
 
-  
-    await userModel.findByIdAndUpdate(req.body.userId, { cartData });
+
+    await userModel.findByIdAndUpdate(req.userId, { cartData });
 
     res.json({ success: true, message: "Removed from Cart" });
   } catch (error) {
@@ -58,8 +58,8 @@ const getCart =async (req,res)=>{
 
 
   try{
-    let userData =await userModel.findById(req.body.userId);
-    let cartData =await userData.cartData;
+    let userData =await userModel.findById(req.userId);
+    let cartData = userData.cartData || {};
     res.json({success:true,cartData});
 
   }catch(error){

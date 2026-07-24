@@ -9,16 +9,23 @@ const stripe =new Stripe(process.env.STRIPE_SECRET_KEY)
 
 const placeOrder =async (req,res) =>{
 
-  const frontend_url ="https://food-ordering-website-frontend-9tja.onrender.com/"
+  const frontend_url = process.env.FRONTEND_URL?.split(",")[0] || "http://localhost:5173";
 try {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return res.status(500).json({ success: false, message: "Stripe is not configured on the server." });
+  }
+  if (!Array.isArray(req.body.items) || req.body.items.length === 0) {
+    return res.status(400).json({ success: false, message: "Your cart is empty." });
+  }
   const newOrder =new orderModel({
-    userId:req.body.userId,
+    userId:req.userId,
     items:req.body.items,
     amount:req.body.amount,
     address:req.body.address
   })
   await newOrder.save();
-  await userModel.findByIdAndUpdate(req.body.userId,{cartData:{}})
+  await userModel.findByIdAndUpdate(req.userId,{cartData:{}})
+  req.app.get("io")?.to("admins").emit("order:created", newOrder)
 
   const line_items =req.body.items.map((item)=>({
     price_data:{
@@ -44,15 +51,23 @@ try {
   const session =await stripe.checkout.sessions.create({
     line_items:line_items,
     mode:'payment',
-    success_url:`${frontend_url}/verify??success=true&orderId=${newOrder._id}`,
-    cancel_url:`${frontend_url}/verify??success=false&orderId=${newOrder._id}`,
+    success_url:`${frontend_url}/verify?success=true&orderId=${newOrder._id}`,
+    cancel_url:`${frontend_url}/verify?success=false&orderId=${newOrder._id}`,
   })
 
   res.json({success:true,session_url:session.url})
   
 } catch (error) {
-  console.log(error);
-  res.json({success:false,message:"Error"})
+  console.error("Stripe checkout error:", error);
+  const details = error.raw?.message || error.message;
+  const errorType = error.type || error.name;
+  const errorCode = error.code ? ` (${error.code})` : "";
+  res.status(500).json({
+    success: false,
+    message: details && details !== "Error"
+      ? details
+      : `Payment setup failed: ${errorType}${errorCode}. Check the backend terminal for details.`
+  });
 }
 }
 
@@ -77,7 +92,7 @@ const verifyOrder =async (req,res)=>{
 
 const userOrders =async (req,res) =>{
   try {
-    const orders = await orderModel.find({userId:req.body.userId});
+    const orders = await orderModel.find({userId:req.userId});
     res.json({success :true ,data:orders})
     
   } catch (error) {
@@ -104,7 +119,10 @@ const listOrders =async (req,res)=>{
 
 const updateStatus =async(req,res)=>{
 try {
-  await orderModel.findByIdAndUpdate(req.body.orderId,{status:req.body.status});
+  const order = await orderModel.findByIdAndUpdate(req.body.orderId,{status:req.body.status},{new:true});
+  const io = req.app.get("io");
+  io?.to("admins").emit("order:updated", order);
+  io?.to(`user:${order.userId}`).emit("order:updated", order);
   res.json({success:true,message:"Status Updated"})
   
 } catch (error) {

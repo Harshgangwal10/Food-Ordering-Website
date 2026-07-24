@@ -1,13 +1,22 @@
 .navbar{
-  padding: 20px 0px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 14px 0px;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding-left: 10vw;
+  padding-right: 10vw;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* position: sticky;
-  top: 0;
-  background:transparent;
-  backdrop-filter: blur(px); */
-  
+  background: transparent;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+
+}
+.navbar.navbar-scrolled{
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 
@@ -17,7 +26,11 @@
   margin: 20px;
   width:max(20%, 80px);
   color: rgb(237, 94, 69);
-  
+  text-decoration: none;
+}
+.navbar-menu a{
+  color: inherit;
+  text-decoration: none;
 }
 
 .navbar-menu{
@@ -70,35 +83,74 @@
 
 .navbar-profile{
   position: relative;
+  display: flex;
+  align-items: center;
+}
+.navbar .navbar-profile-trigger{
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.navbar-profile-trigger img{
+  width: 28px;
 }
 .nav-profile-dropdown{
   position: absolute;
+  top: calc(100% + 10px);
   display: none;
   right: 0;
-  z-index: 1;
+  z-index: 10;
+  margin: 0;
+  min-width: 135px;
 }
-.navbar-profile:hover .nav-profile-dropdown{
+.nav-profile-dropdown.is-open{
  display: flex;
  flex-direction: column;
- gap: 10px;
- background-color: #fff2ef;
- padding: 12px 25px;
- border-radius: 4px;
- border: 1px solid tomato;
- outline: 2px solid white;
+ gap: 2px;
+ background-color: #ffffff;
+ padding: 8px;
+ border-radius: 12px;
+ border: 1px solid #f0d4cf;
+ box-shadow: 0 12px 28px rgba(62, 43, 38, 0.16);
  list-style: none;
+}
+.nav-profile-dropdown.is-open::before{
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 12px;
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-left: 1px solid #f0d4cf;
+  border-top: 1px solid #f0d4cf;
+  transform: rotate(45deg);
+}
+.nav-profile-dropdown hr{
+  width: 100%;
+  margin: 4px 0;
+  border: 0;
+  border-top: 1px solid #f1e5e2;
 }
 .nav-profile-dropdown li{
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #2f3653;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 .nav-profile-dropdown img{
-  width: 20px;
+  width: 18px;
 }
 .nav-profile-dropdown li:hover {
-  color: tomato;
+  color: #e7633c;
+  background: #fff3f0;
 }
 @media (max-width:1050px) {
   .navbar .logo{

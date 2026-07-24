@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from './components/NavBar/Navbar'
-import {Route,Routes, useSearchParams} from 'react-router-dom'
+import {Route,Routes, useLocation} from 'react-router-dom'
 import PlaceOrder from './pages/PlaceOrder/PlaceOrder'
 import Cart from './pages/Cart/Cart'
 import Home from './pages/Home/Home'
@@ -16,6 +16,7 @@ const App = () => {
     <>
     {showLogin ? <Login  setShowLogin={setShowLogin} />:<></>}
   <div className='app'>
+   <ScrollToSection />
    <Navbar setShowLogin ={setShowLogin} />
       <Routes>
        <Route path ='/' element={<Home/>}/>
@@ -32,5 +33,17 @@ const App = () => {
     
   )
 }
+
+const ScrollToSection = () => {
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    if (!hash) return;
+    const section = document.querySelector(hash);
+    if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [hash]);
+
+  return null;
+};
 
 export default App

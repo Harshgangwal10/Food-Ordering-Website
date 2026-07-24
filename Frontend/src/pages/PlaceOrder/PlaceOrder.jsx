@@ -5,7 +5,8 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
 const PlaceOrder = () => {
-  const{getTotalCartAmount,token,food_list ,cartItems,url} =useContext(StoreContext)
+  const{getTotalCartAmount,token,food_list ,cartItems,url,setToken} =useContext(StoreContext)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [data,setData] =useState({
     firstName:"",
     lastName:"",
@@ -25,11 +26,11 @@ const PlaceOrder = () => {
   }
 const placeOrder =async (event) =>{
  event.preventDefault();
+ if (isSubmitting) return;
  let orderItems =[];
  food_list.map((item)=>{
   if(cartItems[item._id]>0){
-    let itemInfo =item;
-    itemInfo["quantity"] =cartItems[item._id];
+    const itemInfo = {...item, quantity: cartItems[item._id]};
     orderItems.push(itemInfo);
   }
  })
@@ -38,13 +39,22 @@ const placeOrder =async (event) =>{
   items:orderItems,
   amount:getTotalCartAmount()+10,
  }
- let response =await axios.post(url+"/api/order/place", orderData,{headers:{token}});
- if(response.data.success){
-  const {session_url} =response.data;
-  window.location.replace(session_url);
- }
- else{
-  alert("Error")
+ try {
+   setIsSubmitting(true);
+   const response =await axios.post(url+"/api/order/place", orderData,{headers:{token}});
+   if(response.data.success && response.data.session_url){
+    window.location.assign(response.data.session_url);
+    return;
+   }
+   alert(response.data.message || "Unable to start payment. Please try again.");
+ } catch (error) {
+   if (error.response?.status === 401) {
+    localStorage.removeItem("token");
+    setToken("");
+   }
+   alert(error.response?.data?.message || "Unable to connect to the payment service.");
+ } finally {
+   setIsSubmitting(false);
  }
 } 
 const navigate =useNavigate();
@@ -96,7 +106,7 @@ useEffect(()=>{
               <b>${getTotalCartAmount()===0 ?0 :getTotalCartAmount()+10}</b>
             </div>      
           </div>
-          <button type='submit'>PROCEED TO PAYMENT</button>
+          <button type='submit' disabled={isSubmitting}>{isSubmitting ? "OPENING PAYMENT..." : "PROCEED TO PAYMENT"}</button>
         </div>
       </div>
     </form>

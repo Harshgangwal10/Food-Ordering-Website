@@ -5,8 +5,8 @@ const ExploreMenu = ({category,setCategory}) => {
 
   return (
     <div className='explore-menu' id='explore-menu'>
-      <h1>Explore our Menu</h1>
-      <p className='explore-menu-text'> "Order your favorite meals effortlessly with QuickFood, a fast and convenient online food ordering platform designed for a seamless dining experience!".</p>
+      <h1>Find something you’ll love</h1>
+      <p className='explore-menu-text'>Browse by category, add your favourites to the cart and enjoy a simple, reliable ordering experience.</p>
       <div className='explore-menu-list'>
         {menu_list.map((item,index)=>{
           return (

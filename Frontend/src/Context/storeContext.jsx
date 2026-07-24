@@ -1,98 +1,45 @@
 import axios from "axios";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem, removeItem, setCartItems as setCartState, setFoodList, setToken as setReduxToken } from "../store/store";
 
+export const StoreContext = createContext(null);
 
+const StoreContextProvider = ({ children }) => {
+  const dispatch = useDispatch();
+  const { cartItems, foodList: food_list, token } = useSelector((state) => state.shop);
+  const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
+  const setToken = (value) => dispatch(setReduxToken(value));
+  const setCartItems = (value) => dispatch(setCartState(value));
 
+  const addToCart = async (itemId) => {
+    dispatch(addItem(itemId));
+    if (token) await axios.post(`${url}/api/cart/add`, { itemId }, { headers: { token } });
+  };
 
-export const StoreContext =createContext(null)
+  const removeFromCart = async (itemId) => {
+    dispatch(removeItem(itemId));
+    if (token) await axios.post(`${url}/api/cart/remove`, { itemId }, { headers: { token } });
+  };
 
-const StoreContextProvider = (props)=>{
+  const getTotalCartAmount = () => Object.entries(cartItems).reduce((total, [itemId, quantity]) => {
+    const item = food_list.find((product) => product._id === itemId);
+    return total + (item ? item.price * quantity : 0);
+  }, 0);
 
-  const[cartItems,setCartItems] = useState({});
-  const url ="https://food-ordering-website-backend-evbb.onrender.com";
+  useEffect(() => {
+    const loadData = async () => {
+      const foodResponse = await axios.get(`${url}/api/food/list`);
+      dispatch(setFoodList(foodResponse.data.data));
+      if (token) {
+        const cartResponse = await axios.post(`${url}/api/cart/get`, {}, { headers: { token } });
+        if (cartResponse.data.success) dispatch(setCartState(cartResponse.data.cartData));
+      }
+    };
+    loadData().catch(console.error);
+  }, [dispatch, token]);
 
-  const [token,setToken] =useState("");
-
-const [food_list,setFoodList] =useState([]);
-  
-  const addToCart = async (itemId)=>{
-    if(!cartItems[itemId]){
-      setCartItems((prev)=>({...prev,[itemId]:1}))
-    }
-    else{
-      setCartItems((prev)=>({...prev,[itemId]:prev[itemId]+1}))
-    }
-    if(token){
-      await axios.post(url +"/api/cart/add",{itemId},{headers:{token}})
-    }
-  }
-
-  const removeFromCart = async (itemId)=>{
-    setCartItems ((prev)=>({...prev,[itemId]:prev[itemId]-1}));
-    if(token){
-      await axios.post(url +"/api/cart/remove",{itemId},{headers:{token}})
-    }
-  }
-
- const getTotalCartAmount =() =>{
-  let totalAmount =0;
-  for(const item in cartItems){
-    if(cartItems[item]>0){
-      let itemInfo=food_list.find((product)=>product._id === item);
-      totalAmount +=itemInfo.price * cartItems[item];
-    }
-  }
-  return totalAmount;
- }
-
- const loadCartData = async (token) => {
-  try {
-    if (!token) {
-      console.error("Token is missing!");
-      return;
-    }
-    const response = await axios.post(url + "/api/cart/get", {}, { headers: { token } });
-    setCartItems(response.data.cartData);
-  } catch (error) {
-    console.error("Error loading cart data:", error.response?.data || error.message);
-  }
+  return <StoreContext.Provider value={{ food_list, cartItems, setCartItems, addToCart, removeFromCart, getTotalCartAmount, url, token, setToken }}>{children}</StoreContext.Provider>;
 };
 
- const fetchFoodList =async ()=>{
-   const response =await axios.get(url+"/api/food/list");
-   setFoodList(response.data.data)
- }
-
- useEffect(()=>{
-  
-  async function loadData(){
-    await fetchFoodList();
-    if(localStorage.getItem("token")){
-      setToken(localStorage.getItem("token"));
-      await loadCartData(localStorage.getItem("token"))
-    }
-  }
-  loadData();
- })
-
-  const contextValue ={
-    food_list,
-    cartItems,
-    setCartItems,
-    addToCart,
-    removeFromCart,
-    getTotalCartAmount,
-    url,
-    token,
-    setToken
-  }
-
-  return (
-    <StoreContext.Provider  value ={contextValue}>
-
-      {props.children}
-    </StoreContext.Provider>
-  )
-}
-
-export default StoreContextProvider
+export default StoreContextProvider;

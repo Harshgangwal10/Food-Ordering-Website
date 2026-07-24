@@ -5,13 +5,14 @@ import {toast} from 'react-toastify'
 import { useEffect } from 'react'
 import axios from 'axios'
 import { assets } from '../../assets/assets'
+import { io } from 'socket.io-client'
 
-const Orders = ({url}) => {
+const Orders = ({url,token}) => {
 
   const[orders,setOrders] =useState([]);
 
   const fetchAllOrders =async ()=>{
-    const response =await axios.get(url+"/api/order/list");
+    const response =await axios.get(url+"/api/order/list",{headers:{token}});
     if(response.data.success){
       setOrders(response.data.data);
       console.log(response.data.data);
@@ -23,7 +24,7 @@ const Orders = ({url}) => {
     const response =await axios.post(url+"/api/order/status",{
       orderId,
       status:event.target.value
-    })
+    },{headers:{token}})
     if(response.data.success){
       await fetchAllOrders();
     }
@@ -31,7 +32,11 @@ const Orders = ({url}) => {
 
   useEffect(()=>{
     fetchAllOrders();
-  },[])
+    const socket = io(url,{auth:{token}});
+    socket.on("order:created", (order) => setOrders((orders) => [order,...orders]));
+    socket.on("order:updated", (order) => setOrders((orders) => orders.map((item) => item._id === order._id ? order : item)));
+    return () => socket.disconnect();
+  },[token])
   return (
     <div className='order-add'>
       <h3>Order Page</h3>

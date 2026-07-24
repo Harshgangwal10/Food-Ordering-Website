@@ -3,6 +3,7 @@ import './MyOrders.css'
 import { StoreContext } from '../../Context/storeContext'
 import axios from 'axios';
 import { assets } from '../../assets/assets';
+import { io } from 'socket.io-client';
 
 const MyOrders = () => {
 
@@ -17,8 +18,11 @@ const fetchOrders = async()=>{
 useEffect(()=>{
   if(token){
     fetchOrders();
+    const socket = io(url,{auth:{token}});
+    socket.on("order:updated", (order) => setData((orders) => orders.map((item) => item._id === order._id ? order : item)));
+    return () => socket.disconnect();
   }
-},[token])
+},[token,url])
   return (
     <div className='my-orders'>
       <h2>My Orders</h2>

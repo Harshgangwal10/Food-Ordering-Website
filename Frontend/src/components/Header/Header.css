@@ -28,7 +28,8 @@
   color: white;
   font-weight: 300;
 }
-.header-content button{
+.header-content .header-menu-link{
+ display: inline-block;
  border: none;
  color: #747474;
  font-weight: 500;
@@ -36,7 +37,12 @@
  background-color:white;
  font-size: max(1vw,13px);
  border-radius: 50px;
+ text-decoration: none;
+ transition: 0.2s;
 
+}
+.header-content .header-menu-link:hover{
+  background-color: #fff4f2;
 }
 
 @media (max-width:1050px) {
@@ -54,7 +60,7 @@
   .header-content p{
     display: none;
   }
-  .header-content button{
+  .header-content .header-menu-link{
    padding: 2vw 4vw;
   }
 }

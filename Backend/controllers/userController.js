@@ -1,4 +1,3 @@
-import userModels from '../models/userModel.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs'; 
 import validator from 'validator';
@@ -20,7 +19,7 @@ const loginUser =async (req,res)=>{
   if(!isMatch){
     return res.json({success:false ,message:"Incorrect credentails"})
   }
-  const token =createToken(user._id);
+  const token =createToken(user);
   res.json({success:true,token})
   }
   catch(error){
@@ -33,8 +32,8 @@ const loginUser =async (req,res)=>{
 
 
 
-const createToken =(id) =>{
-  return jwt.sign({id},process.env.JWT_SECRET)
+const createToken =(user) =>{
+  return jwt.sign({id:user._id,role:user.role},process.env.JWT_SECRET,{expiresIn:"7d"})
 }
 
 // register user 
@@ -68,7 +67,7 @@ try{
   })
 
   const user = await newUser.save();
-  const token =createToken(user._id);
+  const token =createToken(user);
   res.json({success:true ,token})
 }
 catch(error){
