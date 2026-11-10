@@ -1,6 +1,33 @@
 .my-orders{
   margin: 50px 0px;
 }
+.my-orders-header{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.back-home-button{
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border: 1px solid #e2e2e2;
+  border-radius: 50%;
+  background: #fff;
+  color: #454545;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.back-home-button:hover{
+  background: tomato;
+  color: #fff;
+}
+.back-home-button svg{
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
 .my-orders .container{
   display: flex;
   flex-direction: column;

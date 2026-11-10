@@ -1,14 +1,17 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "./Navbar.css";
 import { assets } from "../../assets/assets";
 import {Link, useLocation, useNavigate} from 'react-router-dom'
-import { StoreContext } from "../../Context/storeContext";
+import { selectTotalCartAmount, setToken } from "../../store/store";
 
 const navbar = ({setShowLogin}) => {
   const [menu, setMenu] = useState("Home");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const {getTotalCartAmount,token,setToken} =useContext(StoreContext);
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.shop.token);
+  const totalCartAmount = useSelector(selectTotalCartAmount);
   const navigate =useNavigate()
   const location = useLocation()
 
@@ -29,7 +32,7 @@ const navbar = ({setShowLogin}) => {
 
   const Logout =() =>{
     localStorage.removeItem("token");
-    setToken("")
+    dispatch(setToken(""))
     setIsProfileOpen(false)
     navigate("/")
   }
@@ -51,7 +54,7 @@ const navbar = ({setShowLogin}) => {
 
         <div className="navbar-search-icon">
           <Link to='/cart'><img src={assets.basket_icon} alt="" /></Link>
-          <div className={getTotalCartAmount()===0 ? "" :"dot" }></div>
+          <div className={totalCartAmount===0 ? "" :"dot" }></div>
         </div>
        {!token? <button onClick={()=>setShowLogin(true)}>Sign in</button>
        :<div className="navbar-profile">

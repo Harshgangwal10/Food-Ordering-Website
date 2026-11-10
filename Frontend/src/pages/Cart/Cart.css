@@ -1,6 +1,29 @@
 .cart{
   margin-top: 100px;
 }
+.cart-back-home{
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 20px;
+  padding: 8px;
+  border: 1px solid #e2e2e2;
+  border-radius: 50%;
+  background: #fff;
+  color: #454545;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.cart-back-home:hover{
+  background: tomato;
+  color: #fff;
+}
+.cart-back-home svg{
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
 .cart-items-title{
   display: grid;
   grid-template-columns: 1fr 1.5fr 1fr 1fr 1fr 0.5fr;

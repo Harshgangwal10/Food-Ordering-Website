@@ -1,12 +1,13 @@
-import React, {  useContext, useState } from 'react'
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import './Login.css'
 
 import { assets } from '../../assets/assets'
-import { StoreContext } from '../../Context/storeContext'
+import { API_URL, setToken } from '../../store/store'
 import axios from 'axios'
 
 const Login = ({setShowLogin}) => {
-const {url,setToken} = useContext(StoreContext)
+const dispatch = useDispatch()
 
   const [currState,setCurrState] =useState("Login")
 
@@ -25,7 +26,7 @@ const {url,setToken} = useContext(StoreContext)
 
  const onLogin =async (event)=>{
    event.preventDefault();
-   let newUrl = url;
+   let newUrl = API_URL;
    if(currState === "Login"){
     newUrl += "/api/user/login"
    }else{
@@ -35,7 +36,7 @@ const {url,setToken} = useContext(StoreContext)
     const response = await axios.post(newUrl, data);
 
     if (response.data.success) {
-      setToken(response.data.token);
+      dispatch(setToken(response.data.token));
       localStorage.setItem("token", response.data.token);
       setShowLogin(false);
     } else {

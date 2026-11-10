@@ -1,12 +1,20 @@
-import React, { useContext, useState } from "react";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "./Cart.css";
-import { StoreContext } from "../../Context/storeContext";
 import { useNavigate } from "react-router-dom";
+import { API_URL, removeFromCart, selectTotalCartAmount } from "../../store/store";
 const Cart = () => {
-  const { cartItems, food_list, removeFromCart , getTotalCartAmount,url } = useContext(StoreContext);
+  const dispatch = useDispatch();
+  const { cartItems, foodList: food_list, token } = useSelector((state) => state.shop);
+  const totalCartAmount = useSelector(selectTotalCartAmount);
   const navigate =useNavigate();
   return (
     <div className="cart">
+      <button className="cart-back-home" type="button" onClick={() => navigate('/')} aria-label="Go back home">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+        </svg>
+      </button>
       <div className="cart-items">
         <div className="cart-items-title">
           <p>Items</p>
@@ -23,12 +31,12 @@ const Cart = () => {
             return (
               <div>
                 <div className="cart-items-title cart-items-item">
-                  <img src={url+"/images"+item.image} alt="" />
+                  <img src={API_URL+"/images/"+item.image} alt="" />
                   <p>{item.name}</p>
                   <p>${item.price}</p>
                   <p>{cartItems[item._id]}</p>
                   <p>${item.price * cartItems[item._id]}</p>
-                  <p onClick={() => removeFromCart(item._id)} className="cross">
+                  <p onClick={() => dispatch(removeFromCart(item._id, token))} className="cross">
                     x
                   </p>
                 </div>
@@ -45,17 +53,17 @@ const Cart = () => {
           <div>
             <div className="cart-total-details">
               <p>Subtotal</p>
-              <p>${getTotalCartAmount()}</p>
+              <p>${totalCartAmount}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <p>Delivery Fee</p>
-              <p>${getTotalCartAmount()=== 0? 0:10}</p>
+              <p>${totalCartAmount=== 0? 0:10}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <b>Total</b>
-              <b>${getTotalCartAmount()===0 ?0 :getTotalCartAmount()+10}</b>
+              <b>${totalCartAmount===0 ?0 :totalCartAmount+10}</b>
             </div>     
           </div>
           <button onClick={()=>navigate('/order')}>PROCEED TO CHECKOUT</button>

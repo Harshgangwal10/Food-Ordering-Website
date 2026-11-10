@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { loadCart, loadFoodList, setCartItems } from './store/store'
 import Navbar from './components/NavBar/Navbar'
 import {Route,Routes, useLocation} from 'react-router-dom'
 import PlaceOrder from './pages/PlaceOrder/PlaceOrder'
@@ -11,7 +13,22 @@ import MyOrders from './pages/MyOrders/MyOrders'
 
 
 const App = () => {
+  const dispatch = useDispatch()
+  const token = useSelector((state) => state.shop.token)
   const [showLogin,setShowLogin]= useState(false);
+
+  useEffect(() => {
+    dispatch(loadFoodList())
+  }, [dispatch])
+
+  useEffect(() => {
+    if (token) {
+      dispatch(loadCart(token)).catch(console.error)
+    } else {
+      dispatch(setCartItems({}))
+    }
+  }, [dispatch, token])
+
   return (
     <>
     {showLogin ? <Login  setShowLogin={setShowLogin} />:<></>}

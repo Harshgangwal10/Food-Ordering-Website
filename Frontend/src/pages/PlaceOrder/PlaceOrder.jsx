@@ -1,11 +1,14 @@
-import React, { useContext,useEffect,useState } from 'react'
+import React, { useEffect,useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import "./PlaceOrder.css"
-import { StoreContext } from '../../Context/storeContext'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { API_URL, selectTotalCartAmount, setToken } from '../../store/store'
 
 const PlaceOrder = () => {
-  const{getTotalCartAmount,token,food_list ,cartItems,url,setToken} =useContext(StoreContext)
+  const dispatch = useDispatch()
+  const {token, foodList: food_list, cartItems} = useSelector((state) => state.shop)
+  const totalCartAmount = useSelector(selectTotalCartAmount)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [data,setData] =useState({
     firstName:"",
@@ -37,11 +40,11 @@ const placeOrder =async (event) =>{
  let orderData ={
   address:data,
   items:orderItems,
-  amount:getTotalCartAmount()+10,
+  amount:totalCartAmount+10,
  }
  try {
    setIsSubmitting(true);
-   const response =await axios.post(url+"/api/order/place", orderData,{headers:{token}});
+   const response =await axios.post(API_URL+"/api/order/place", orderData,{headers:{token}});
    if(response.data.success && response.data.session_url){
     window.location.assign(response.data.session_url);
     return;
@@ -50,7 +53,7 @@ const placeOrder =async (event) =>{
  } catch (error) {
    if (error.response?.status === 401) {
     localStorage.removeItem("token");
-    setToken("");
+    dispatch(setToken(""));
    }
    alert(error.response?.data?.message || "Unable to connect to the payment service.");
  } finally {
@@ -62,10 +65,10 @@ const navigate =useNavigate();
 useEffect(()=>{
  if(!token){
    navigate('/cart')
- }else if(getTotalCartAmount()===0){
+ }else if(totalCartAmount===0){
    navigate('/cart')
  }
-},[token])
+},[token, totalCartAmount, navigate])
 
   return (
     <form onSubmit={placeOrder} className='place-order'>
@@ -93,17 +96,17 @@ useEffect(()=>{
           <div>
           <div className="cart-total-details">
               <p>Subtotal</p>
-              <p>${getTotalCartAmount()}</p>
+              <p>${totalCartAmount}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <p>Delivery Fee</p>
-              <p>${getTotalCartAmount()=== 0? 0:10}</p>
+              <p>${totalCartAmount=== 0? 0:10}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <b>Total</b>
-              <b>${getTotalCartAmount()===0 ?0 :getTotalCartAmount()+10}</b>
+              <b>${totalCartAmount===0 ?0 :totalCartAmount+10}</b>
             </div>      
           </div>
           <button type='submit' disabled={isSubmitting}>{isSubmitting ? "OPENING PAYMENT..." : "PROCEED TO PAYMENT"}</button>

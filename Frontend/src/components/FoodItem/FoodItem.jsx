@@ -1,17 +1,18 @@
-import React, { useContext } from "react";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "./FoodItem.css";
 import { assets } from "../../assets/assets";
-import { StoreContext } from "../../Context/storeContext";
+import { API_URL, addToCart, removeFromCart } from "../../store/store";
 
 const FoodItem = ({ id, name, price, description, image }) => {
-  const { cartItems, addToCart, removeFromCart, url } =
-    useContext(StoreContext);
+  const dispatch = useDispatch();
+  const { cartItems, token } = useSelector((state) => state.shop);
   return (
     <div className="food-item">
       <div className="food-item-image-container">
         <img
           className="food-item-image"
-          src={url + "/images/" + image}
+          src={API_URL + "/images/" + image}
           alt={name}
           loading="lazy"
           decoding="async"
@@ -19,19 +20,19 @@ const FoodItem = ({ id, name, price, description, image }) => {
         {!cartItems[id] || cartItems[id] === 0 ? (
           <img
             className="add"
-            onClick={() => addToCart(id)}
+            onClick={() => dispatch(addToCart(id, token))}
             src={assets.add_icon_white}
           ></img>
         ) : (
           <div className="food-item-counter">
             <img
-              onClick={() => removeFromCart(id)}
+              onClick={() => dispatch(removeFromCart(id, token))}
               src={assets.remove_icon_red}
               alt=""
             />
             <p>{cartItems[id]}</p>
             <img
-              onClick={() => addToCart(id)}
+              onClick={() => dispatch(addToCart(id, token))}
               src={assets.add_icon_green}
               alt=""
             />
